@@ -11,3 +11,19 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+.rotating-image {
+  animation-name: spin;
+  animation-duration: 4s; /* Time for one full rotation */
+  animation-timing-function: linear; /* Constant speed */
+  animation-iteration-count: infinite; /* Repeat indefinitely */
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

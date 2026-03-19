@@ -4,6 +4,7 @@ import { EspnApiService } from '../../services/espn-api/espn-api';
 import { Competition, Competitor, EspnEvent } from '../../models/espn-api.models';
 import { CommonModule } from '@angular/common';
 import { interval, Subscription, tap } from 'rxjs';
+import { calculateTimeRemaining } from '../../core/utils';
 
 interface LiveGame {
   event: EspnEvent;
@@ -22,9 +23,10 @@ export class TournamentPage implements OnInit, OnDestroy {
   espnApiService = inject(EspnApiService);
 
   private subscription!: Subscription;
-  private readonly SCOREBOARD_REFRESH_RATE = 1000 * 60; // 1 min
+  private readonly SCOREBOARD_REFRESH_RATE_MS = 1000 * 60; // 1 min
   private _liveGames = signal<LiveGame[]>([]);
   private _scoreboardRefreshTimeRemaining = signal<string>('calculating...');
+  private _isFetchingScoreboardData = signal<boolean>(false);
   private customSortOrder = ['2nd', 'Halftime', '1st'];
   private orderMap = this.customSortOrder.reduce((obj, item, index) => {
     obj[item] = index + 1; // Assign priority, starting from 1
@@ -33,6 +35,7 @@ export class TournamentPage implements OnInit, OnDestroy {
 
   liveGames = this._liveGames.asReadonly();
   scoreboardRefreshTimeRemaining = this._scoreboardRefreshTimeRemaining.asReadonly();
+  isFetchingScoreboardData = this._isFetchingScoreboardData.asReadonly();
 
   ngOnInit(): void {
     // TODO: setup timer in session storage so refreshes don't re-trigger updates outside of interval
@@ -47,29 +50,6 @@ export class TournamentPage implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-  }
-
-  private calculateTimeRemaining() {
-    const now = new Date().getTime();
-    // Calculate how much time has passed since the last full interval start
-    const timePassedInCurrentInterval = now % this.SCOREBOARD_REFRESH_RATE;
-    // The remaining time is the full duration minus the time passed
-    const remainingMs = this.SCOREBOARD_REFRESH_RATE - timePassedInCurrentInterval;
-    const formattedTime = this.formatTime(remainingMs);
-    return formattedTime;
-  }
-
-  private formatTime(milliseconds: number): string {
-    const seconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-
-    // Simple format for demonstration (MM:SS)
-    return `${this.pad(minutes)}:${this.pad(remainingSeconds)}`;
-  }
-
-  private pad(num: number): string {
-    return num < 10 ? `0${num}` : num.toString();
   }
 
   private createLiveGameFromResponseEvent(event: EspnEvent): LiveGame {
@@ -88,7 +68,7 @@ export class TournamentPage implements OnInit, OnDestroy {
     this.subscription = interval(1000)
       .pipe(
         tap(() => {
-          const formattedTime = this.calculateTimeRemaining();
+          const formattedTime = calculateTimeRemaining(this.SCOREBOARD_REFRESH_RATE_MS);
           this._scoreboardRefreshTimeRemaining.set(formattedTime);
           if (formattedTime === '00:00') {
             this.fetchScoreboardData();
@@ -99,6 +79,7 @@ export class TournamentPage implements OnInit, OnDestroy {
   }
 
   fetchScoreboardData() {
+    this._isFetchingScoreboardData.set(true);
     const today = new Date();
     const todayISO = today.toISOString().slice(0, 10); // YYYY-MM-DD
     const [year, month, day] = todayISO.split('-');
@@ -132,8 +113,10 @@ export class TournamentPage implements OnInit, OnDestroy {
         });
 
         this._liveGames.set(liveGames);
+        this._isFetchingScoreboardData.set(false);
       },
       error: (err) => {
+        this._isFetchingScoreboardData.set(false);
         console.log(err);
       },
     });

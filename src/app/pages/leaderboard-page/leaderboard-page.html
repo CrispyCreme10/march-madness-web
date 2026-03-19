@@ -1,3 +1,33 @@
 <app-main-layout>
-  <p>Under construction...</p>
+  <div>
+    <h4 class="text-center mb-5 font-bold">Refresh: {{ leaderboardRefreshTimeRemaining() }}</h4>
+  </div>
+  <div id="leaderboard" class="flex justify-center items-center">
+    @if (isFetchingLeaderboardData()) {
+      <img width="50" height="50" src="spinner.gif" />
+    } @else if (!leaderboardParticipants().length) {
+      <span>Leaderboard not available.</span>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Teams Alive</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (leaderboardParticipant of leaderboardParticipants(); track $index) {
+            <tr>
+              <td>{{ $index + 1 }}</td>
+              <td>{{ leaderboardParticipant.participantName }}</td>
+              <td class="text-center">{{ leaderboardParticipant.teamsAlive }}</td>
+              <td class="text-center">{{ leaderboardParticipant.points }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
 </app-main-layout>
