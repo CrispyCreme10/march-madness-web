@@ -1,10 +1,141 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MainLayout } from '../../layouts/main-layout/main-layout';
+import { EspnApiService } from '../../services/espn-api/espn-api';
+import { Competition, Competitor, EspnEvent } from '../../models/espn-api.models';
+import { CommonModule } from '@angular/common';
+import { interval, Subscription, tap } from 'rxjs';
+
+interface LiveGame {
+  event: EspnEvent;
+  competitor1: Competitor;
+  competitor2: Competitor;
+  competition: Competition;
+}
 
 @Component({
   selector: 'app-tournament-page',
-  imports: [MainLayout],
+  imports: [CommonModule, MainLayout],
   templateUrl: './tournament-page.html',
   styleUrl: './tournament-page.css',
 })
-export class TournamentPage {}
+export class TournamentPage implements OnInit, OnDestroy {
+  espnApiService = inject(EspnApiService);
+
+  private subscription!: Subscription;
+  private readonly SCOREBOARD_REFRESH_RATE = 1000 * 60; // 1 min
+  private _liveGames = signal<LiveGame[]>([]);
+  private _scoreboardRefreshTimeRemaining = signal<string>('calculating...');
+  private customSortOrder = ['2nd', 'Halftime', '1st'];
+  private orderMap = this.customSortOrder.reduce((obj, item, index) => {
+    obj[item] = index + 1; // Assign priority, starting from 1
+    return obj;
+  }, {} as any);
+
+  liveGames = this._liveGames.asReadonly();
+  scoreboardRefreshTimeRemaining = this._scoreboardRefreshTimeRemaining.asReadonly();
+
+  ngOnInit(): void {
+    // TODO: setup timer in session storage so refreshes don't re-trigger updates outside of interval
+
+    this.startTimer();
+
+    // Run initial call
+    this.fetchScoreboardData();
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  private calculateTimeRemaining() {
+    const now = new Date().getTime();
+    // Calculate how much time has passed since the last full interval start
+    const timePassedInCurrentInterval = now % this.SCOREBOARD_REFRESH_RATE;
+    // The remaining time is the full duration minus the time passed
+    const remainingMs = this.SCOREBOARD_REFRESH_RATE - timePassedInCurrentInterval;
+    const formattedTime = this.formatTime(remainingMs);
+    return formattedTime;
+  }
+
+  private formatTime(milliseconds: number): string {
+    const seconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    // Simple format for demonstration (MM:SS)
+    return `${this.pad(minutes)}:${this.pad(remainingSeconds)}`;
+  }
+
+  private pad(num: number): string {
+    return num < 10 ? `0${num}` : num.toString();
+  }
+
+  private createLiveGameFromResponseEvent(event: EspnEvent): LiveGame {
+    const competition = event.competitions[0];
+    const [competitor1, competitor2] = competition.competitors;
+
+    return {
+      event,
+      competitor1,
+      competitor2,
+      competition,
+    };
+  }
+
+  startTimer() {
+    this.subscription = interval(1000)
+      .pipe(
+        tap(() => {
+          const formattedTime = this.calculateTimeRemaining();
+          this._scoreboardRefreshTimeRemaining.set(formattedTime);
+          if (formattedTime === '00:00') {
+            this.fetchScoreboardData();
+          }
+        }),
+      )
+      .subscribe();
+  }
+
+  fetchScoreboardData() {
+    const today = new Date();
+    const todayISO = today.toISOString().slice(0, 10); // YYYY-MM-DD
+    const [year, month, day] = todayISO.split('-');
+    this.espnApiService.getScoreboardDataByDate(year, month, day).subscribe({
+      next: (response) => {
+        const liveGames: LiveGame[] =
+          response?.events?.map((event) => this.createLiveGameFromResponseEvent(event)) ?? [];
+
+        // sort by live games vs scheduled
+        liveGames.sort((a, b) => {
+          const aName = a.competition.status.type.shortDetail;
+          const bName = b.competition.status.type.shortDetail;
+          const aPriority = this.orderMap[aName];
+          const bPriority = this.orderMap[bName];
+
+          // Check if both items are in the custom order
+          if (aPriority && bPriority) {
+            return aPriority - bPriority;
+          }
+          // Check if only item 'a' is in the custom order (should come first)
+          if (aPriority) {
+            return -1; // a comes before b
+          }
+          // Check if only item 'b' is in the custom order (should come first)
+          if (bPriority) {
+            return 1; // b comes before a
+          }
+
+          // If neither is in the custom order, sort alphabetically
+          return aName.localeCompare(bName);
+        });
+
+        this._liveGames.set(liveGames);
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
+}

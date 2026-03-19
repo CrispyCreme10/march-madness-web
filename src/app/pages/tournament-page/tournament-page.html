@@ -1,3 +1,44 @@
 <app-main-layout>
-  <p>Under construction...</p>
+  <div>
+    <h4 class="text-center mb-5 font-bold">Refresh: {{ scoreboardRefreshTimeRemaining() }}</h4>
+  </div>
+  <div id="live-games">
+    @if (!liveGames().length) {
+      <span>No games found.</span>
+    } @else {
+      @for (liveGame of liveGames(); track $index) {
+        <div
+          id="live-game"
+          class="flex flex-col gap-1 py-1.5 px-2.5 rounded-lg border bg-white min-w-70"
+        >
+          <div id="competitors" class="flex flex-col">
+            <ng-container
+              [ngTemplateOutlet]="competitorTemplate"
+              [ngTemplateOutletContext]="{ $implicit: liveGame.competitor1 }"
+            ></ng-container>
+            <ng-container
+              [ngTemplateOutlet]="competitorTemplate"
+              [ngTemplateOutletContext]="{ $implicit: liveGame.competitor2 }"
+            ></ng-container>
+          </div>
+          <div id="status" class="text-[#d40909] text-xs font-bold">
+            <span>{{ liveGame.competition.status.type.shortDetail }}</span>
+          </div>
+        </div>
+      }
+    }
+  </div>
 </app-main-layout>
+
+<ng-template #competitorTemplate let-competitor>
+  <div id="competitor" class="flex justify-between">
+    <div class="flex gap-1 items-center">
+      <img width="20" heigth="20" [src]="competitor.team.logo" />
+      <span class="flex justify-center items-center text-xs w-4 h-4 text-[#6c6e6f]">{{
+        competitor.curatedRank.current
+      }}</span>
+      <span class="text-sm font-bold">{{ competitor.team.shortDisplayName }}</span>
+    </div>
+    <span class="ml-10 font-medium">{{ competitor.score }}</span>
+  </div>
+</ng-template>
