@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Client, Databases, ID, Models, Query, TablesDB } from 'appwrite';
-import { environment } from '../../../environments/environment'; // Store your IDs here
+import { Client, Models, Query, TablesDB } from 'appwrite';
 import {
   EntriesModel,
   EntriesModelType,
@@ -30,8 +29,8 @@ export class AppwriteService {
 
   constructor() {
     this.client = new Client()
-      .setEndpoint(environment.appwriteEndpoint!)
-      .setProject(environment.appwriteProjectID!);
+      .setEndpoint(import.meta.env['NG_APP_APPWRITE_ENDPOINT'])
+      .setProject(import.meta.env['NG_APP_APPWRITE_PROJECT_ID']);
 
     this.tablesDB = new TablesDB(this.client);
   }
@@ -87,7 +86,7 @@ export class AppwriteService {
   private async getAllEntries(): Promise<Models.RowList<EntriesModelType>> {
     try {
       return await this.tablesDB.listRows<EntriesModelType>({
-        databaseId: environment.appwriteDatabaseID!,
+        databaseId: import.meta.env['NG_APP_APPWRITE_DATABASE_ID'],
         tableId: this.ENTRIES_TABLE_ID,
         queries: [Query.limit(1000)],
       });
@@ -100,7 +99,7 @@ export class AppwriteService {
   private async getAllTeams(): Promise<Models.RowList<TeamsModelType>> {
     try {
       return await this.tablesDB.listRows<TeamsModelType>({
-        databaseId: environment.appwriteDatabaseID!,
+        databaseId: import.meta.env['NG_APP_APPWRITE_DATABASE_ID'],
         tableId: this.TEAMS_TABLE_ID,
         queries: [Query.limit(1000)],
       });
