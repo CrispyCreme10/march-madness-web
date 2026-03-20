@@ -15,6 +15,7 @@ export interface LeaderboardParticipant {
     isAlive: boolean;
   }[];
   points: number;
+  pointsBehind: number;
 }
 
 @Injectable({
@@ -53,6 +54,7 @@ export class AppwriteService {
           teamsAlive: entry.Teams_Alive,
           teamStatus: [],
           points: 0,
+          pointsBehind: 0,
         };
         let totalParticipantPoints = entry.Entry_Points;
         const teamNames = entry.Entry_Teams.split(',');
@@ -76,7 +78,22 @@ export class AppwriteService {
         leaderboardParticipants.push(leaderboardParticipant);
       });
 
-      return leaderboardParticipants.sort((a, b) => b.points - a.points);
+      let sortedLeaderboard = leaderboardParticipants.sort((a, b) => b.points - a.points);
+      let leadingParticipant: LeaderboardParticipant | undefined;
+      sortedLeaderboard = sortedLeaderboard.map((leaderboardParticipant, index) => {
+        if (index === 0) {
+          leadingParticipant = leaderboardParticipant;
+          return leaderboardParticipant;
+        }
+
+        return {
+          ...leaderboardParticipant,
+          pointsBehind: leadingParticipant
+            ? leadingParticipant.points - leaderboardParticipant.points
+            : 0,
+        };
+      });
+      return sortedLeaderboard;
     } catch (error) {
       console.error('Error updating leaderboard:', error);
       throw error;

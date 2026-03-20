@@ -1,7 +1,10 @@
 <app-main-layout>
+  <!-- 
+  DISABLING timer to reduce unnecessary calls - JR 03/20/26
   <div>
     <h4 class="text-center mb-5 font-bold">Refresh: {{ leaderboardRefreshTimeRemaining() }}</h4>
-  </div>
+  </div> 
+  -->
   <div id="leaderboard" class="flex justify-center items-center">
     @if (isFetchingLeaderboardData()) {
       <img width="50" height="50" src="spinner.gif" />
@@ -11,19 +14,21 @@
       <table>
         <thead>
           <tr>
-            <th>Rank</th>
+            <th>Place</th>
             <th>Name</th>
-            <th>Teams Alive</th>
             <th>Points</th>
+            <th>Teams Left</th>
+            <th>Points Behind</th>
           </tr>
         </thead>
         <tbody>
           @for (leaderboardParticipant of leaderboardParticipants(); track $index) {
             <tr>
-              <td>{{ $index + 1 }}</td>
+              <td class="text-center">{{ $index + 1 }}</td>
               <td>{{ leaderboardParticipant.participantName }}</td>
-              <td class="text-center">{{ leaderboardParticipant.teamsAlive }}</td>
               <td class="text-center">{{ leaderboardParticipant.points }}</td>
+              <td class="text-center">{{ leaderboardParticipant.teamsAlive }}</td>
+              <td class="text-center">{{ leaderboardParticipant.pointsBehind }}</td>
             </tr>
           }
         </tbody>

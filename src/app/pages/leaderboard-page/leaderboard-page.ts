@@ -29,7 +29,8 @@ export class LeaderboardPage implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     // TODO: setup timer in session storage so refreshes don't re-trigger updates outside of interval
 
-    this.startTimer();
+    // DISABLING timer to reduce unnecessary calls - JR 03/20/26
+    // this.startTimer();
 
     // Run initial call
     await this.fetchLeaderboardData();
