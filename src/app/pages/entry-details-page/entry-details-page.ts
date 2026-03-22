@@ -14,6 +14,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { TeamsModelType } from '../../models/appwrite.models';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-entry-details-page',
@@ -26,6 +27,7 @@ import { TeamsModelType } from '../../models/appwrite.models';
     IconFieldModule,
     InputIconModule,
     InputTextModule,
+    CardModule,
   ],
   templateUrl: './entry-details-page.html',
   styleUrl: './entry-details-page.css',

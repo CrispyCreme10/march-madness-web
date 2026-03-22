@@ -1,18 +1,42 @@
 <app-main-layout>
-  <div class="flex justify-center items-center">
-    @if (isLoading()) {
+  @if (isLoading()) {
+    <!-- <div class="flex justify-center items-center">
       <img width="50" height="50" src="spinner.gif" />
-    } @else if (!entryDetails()) {
-      <span>Entry not found.</span>
-    } @else {
-      <div id="entry-details">
-        <div class="entry-header">
-          <h2>{{ entryDetails()!.entry.Entry_Name }}</h2>
-          <div class="entry-summary">
-            <span><strong>Teams Alive:</strong> {{ entryDetails()!.entry.Teams_Alive }}</span>
-            <span><strong>Bonus Points:</strong> {{ entryDetails()!.entry.Entry_Points }}</span>
-            <span><strong>Team Points:</strong> {{ teamPoints() }}</span>
-            <span><strong>Total Points:</strong> {{ totalPoints() }}</span>
+    </div> -->
+  } @else if (!entryDetails()) {
+    <span>Entry not found.</span>
+  } @else {
+    <p-card>
+      <div id="entry-details" class="w-full">
+        <div class="mb-4">
+          <h1 class="text-2xl font-bold mb-4 text-color text-center">
+            {{ entryDetails()!.entry.Entry_Name }}
+          </h1>
+          <div id="entry-values">
+            <ng-container
+              *ngTemplateOutlet="
+                dataPoint;
+                context: { $implicit: 'Teams Alive', value: entryDetails()!.entry.Teams_Alive }
+              "
+            ></ng-container>
+            <ng-container
+              *ngTemplateOutlet="
+                dataPoint;
+                context: { $implicit: 'Bonus Points', value: entryDetails()!.entry.Entry_Points }
+              "
+            ></ng-container>
+            <ng-container
+              *ngTemplateOutlet="
+                dataPoint;
+                context: { $implicit: 'Team Points', value: teamPoints() }
+              "
+            ></ng-container>
+            <ng-container
+              *ngTemplateOutlet="
+                dataPoint;
+                context: { $implicit: 'Total Points', value: totalPoints() }
+              "
+            ></ng-container>
           </div>
         </div>
         <p-table
@@ -64,6 +88,21 @@
           </ng-template>
         </p-table>
       </div>
-    }
-  </div>
+    </p-card>
+  }
 </app-main-layout>
+
+<ng-template #dataPoint let-label let-value="value">
+  <div class="flex gap-2">
+    <div
+      class="w-2 h-full rounded-full shadow-[0px_3px_1px_0px_rgba(0,0,0,0.00),0px_2px_1px_0px_rgba(0,0,0,0.01),0px_1px_1px_0px_rgba(0,0,0,0.02),0px_0px_1px_0px_rgba(0,0,0,0.03)]"
+      style="background: var(--p-primary-color)"
+    ></div>
+    <div>
+      <div class="inline-flex items-center gap-1">
+        <span class="text-2xl font-medium text-surface-950 dark:text-color">{{ value }}</span>
+      </div>
+      <div class="mt-1 text-sm text-surface-500">{{ label }}</div>
+    </div>
+  </div>
+</ng-template>
