@@ -543,6 +543,9 @@ export enum Description {
 
 export enum TypeName {
   StatusScheduled = 'STATUS_SCHEDULED',
+  StatusFinal = 'STATUS_FINAL',
+  StatusHalfTime = 'STATUS_HALFTIME',
+  StatusInProgress = 'STATUS_IN_PROGRESS',
 }
 
 export enum State {

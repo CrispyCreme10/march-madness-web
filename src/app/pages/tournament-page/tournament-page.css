@@ -1,13 +1,30 @@
+.game-group {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.group-label {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #333;
+  border-bottom: 2px solid #d40909;
+  padding-bottom: 0.25rem;
+}
+
 #live-games {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(256px, 1fr));
   grid-auto-rows: auto;
   gap: 1rem;
   justify-items: center;
-  align-items: center;
 }
 
 #live-game {
   border: rgba(0, 0, 0, 0.16);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
+}
+
+#live-game.final #competitor.lost {
+  color: #939599;
 }

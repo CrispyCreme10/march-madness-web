@@ -1,39 +1,63 @@
 <app-main-layout>
-  <div>
-    <h4 class="text-center mb-5 font-bold">Refresh: {{ scoreboardRefreshTimeRemaining() }}</h4>
-  </div>
-  <div id="live-games">
-    @if (isFetchingScoreboardData()) {
+  <p-card>
+    <div>
+      <h4 class="text-center mb-5 font-bold">Refresh: {{ scoreboardRefreshTimeRemaining() }}</h4>
+    </div>
+    <div id="live-games">
+      @if (isFetchingScoreboardData()) {
+        <!-- <div class="flex justify-center items-center">
       <img width="50" height="50" src="spinner.gif" />
-    } @else if (!liveGames().length) {
-      <span>No games found.</span>
-    } @else {
-      @for (liveGame of liveGames(); track $index) {
-        <div
-          id="live-game"
-          class="flex flex-col gap-1.5 py-1.5 px-2.5 rounded-lg border bg-white min-w-70"
-        >
-          <div id="competitors" class="flex flex-col gap-1">
-            <ng-container
-              [ngTemplateOutlet]="competitorTemplate"
-              [ngTemplateOutletContext]="{ $implicit: liveGame.competitor1 }"
-            ></ng-container>
-            <ng-container
-              [ngTemplateOutlet]="competitorTemplate"
-              [ngTemplateOutletContext]="{ $implicit: liveGame.competitor2 }"
-            ></ng-container>
+        </div> -->
+      } @else if (!liveGames().length) {
+        <span>No games found.</span>
+      } @else {
+        @for (group of groupedGames(); track group.label) {
+          <div class="game-group">
+            <h3 class="group-label">{{ group.label }}</h3>
+            <div id="live-games">
+              @for (liveGame of group.games; track $index) {
+                <div
+                  id="live-game"
+                  [ngClass]="{ final: group.label === 'Final' }"
+                  class="flex flex-col gap-1.5 py-1.5 pl-2.5 pr-3.5 rounded-lg border bg-white min-w-64 w-full"
+                >
+                  <div id="competitors" class="flex flex-col gap-1">
+                    <ng-container
+                      [ngTemplateOutlet]="competitorTemplate"
+                      [ngTemplateOutletContext]="{
+                        $implicit: liveGame.competitor1,
+                        isFinal: group.label === 'Final',
+                        lost:
+                          group.label === 'Final' &&
+                          liveGame.competitor1.score < liveGame.competitor2.score,
+                      }"
+                    ></ng-container>
+                    <ng-container
+                      [ngTemplateOutlet]="competitorTemplate"
+                      [ngTemplateOutletContext]="{
+                        $implicit: liveGame.competitor2,
+                        isFinal: group.label === 'Final',
+                        lost:
+                          group.label === 'Final' &&
+                          liveGame.competitor2.score < liveGame.competitor1.score,
+                      }"
+                    ></ng-container>
+                  </div>
+                  <div id="status" class="text-[#d40909] text-xs font-bold">
+                    <span>{{ liveGame.competition.status.type.shortDetail }}</span>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
-          <div id="status" class="text-[#d40909] text-xs font-bold">
-            <span>{{ liveGame.competition.status.type.shortDetail }}</span>
-          </div>
-        </div>
+        }
       }
-    }
-  </div>
+    </div>
+  </p-card>
 </app-main-layout>
 
-<ng-template #competitorTemplate let-competitor>
-  <div id="competitor" class="flex justify-between">
+<ng-template #competitorTemplate let-competitor let-isFinal="isFinal" let-lost="lost">
+  <div id="competitor" [ngClass]="{ lost }" class="relative flex justify-between">
     <div class="flex gap-1 items-center">
       <img width="20" heigth="20" [src]="competitor.team.logo" />
       <span class="flex justify-center items-center text-xs w-4 h-4 text-[#6c6e6f]">{{
@@ -41,6 +65,9 @@
       }}</span>
       <span class="text-sm font-bold">{{ competitor.team.shortDisplayName }}</span>
     </div>
-    <span class="ml-10 font-medium">{{ competitor.score > 0 ? competitor.score : '' }}</span>
+    <span class="ml-10 font-bold">{{ competitor.score > 0 ? competitor.score : '' }}</span>
+    @if (isFinal && !lost) {
+      <img width="10" height="10" class="absolute top-2 -right-3.5" src="arrowhead-left.png" />
+    }
   </div>
 </ng-template>

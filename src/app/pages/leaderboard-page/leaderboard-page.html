@@ -5,12 +5,15 @@
     <h4 class="text-center mb-5 font-bold">Refresh: {{ leaderboardRefreshTimeRemaining() }}</h4>
   </div> 
   -->
-  <div id="leaderboard" class="flex justify-center items-center">
-    @if (isFetchingLeaderboardData()) {
+  @if (isFetchingLeaderboardData()) {
+    <!-- <div class="flex justify-center items-center">
       <img width="50" height="50" src="spinner.gif" />
-    } @else if (!leaderboardParticipants().length) {
-      <span>Leaderboard not available.</span>
-    } @else {
+        </div> -->
+  } @else if (!leaderboardParticipants().length) {
+    <span>Leaderboard not available.</span>
+  } @else {
+    <p-card>
+      <h1 class="font-semibold text-2xl mb-4 text-center">Leaderboard</h1>
       <p-table
         #dataTable
         [value]="leaderboardParticipants()"
@@ -20,7 +23,6 @@
         rowHover
         stripedRows
         resizableColumns
-        [tableStyle]="{ 'min-width': '50rem' }"
         size="small"
         [style]="{ width: '100%' }"
       >
@@ -43,6 +45,6 @@
           </tr>
         </ng-template>
       </p-table>
-    }
-  </div>
+    </p-card>
+  }
 </app-main-layout>

@@ -50,7 +50,9 @@ export class EntryDetailsPage implements OnInit, OnDestroy {
     if (!entry) return null;
 
     const teams = this.store.entryToTeamsMap().get(entryId) ?? [];
-    return { entry, teams };
+    const rankn = this.store.leaderboardParticipants().findIndex((p) => p.entryId === entryId);
+    const rank = rankn === -1 ? 0 : rankn + 1;
+    return { entry, teams, rank };
   });
   cols!: Column[];
   selectedColumns!: Column[];

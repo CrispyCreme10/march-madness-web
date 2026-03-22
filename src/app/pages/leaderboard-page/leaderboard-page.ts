@@ -5,10 +5,11 @@ import { interval, Subscription, tap } from 'rxjs';
 import { calculateTimeRemaining } from '../../core/utils';
 import { AppNavigationService } from '../../services/app-navigation-service/app-navigation-service';
 import { TableModule } from 'primeng/table';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-leaderboard-page',
-  imports: [MainLayout, TableModule],
+  imports: [MainLayout, TableModule, CardModule],
   templateUrl: './leaderboard-page.html',
   styleUrl: './leaderboard-page.css',
 })

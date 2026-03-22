@@ -9,8 +9,11 @@
     <p-card>
       <div id="entry-details" class="w-full">
         <div class="mb-4">
-          <h1 class="text-2xl font-bold mb-4 text-color text-center">
-            {{ entryDetails()!.entry.Entry_Name }}
+          <h1
+            class="flex gap-1.5 justify-center items-center text-2xl font-bold mb-4 text-color text-center"
+          >
+            <span>#{{ entryDetails()!.rank }}</span>
+            <span>{{ entryDetails()!.entry.Entry_Name }}</span>
           </h1>
           <div id="entry-values">
             <ng-container
@@ -39,6 +42,7 @@
             ></ng-container>
           </div>
         </div>
+        <h2 class="font-semibold text-lg mb-2 text-center">Selected Teams</h2>
         <p-table
           #dataTable
           [columns]="selectedColumns"
@@ -47,7 +51,6 @@
           sortField="Alive"
           [sortOrder]="-1"
           resizableColumns
-          [tableStyle]="{ 'min-width': '50rem' }"
           size="small"
         >
           <ng-template #caption>
