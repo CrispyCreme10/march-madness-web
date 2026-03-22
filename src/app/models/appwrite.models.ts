@@ -23,3 +23,15 @@ export interface TeamsModel {
 
 export type EntriesModelType = Models.Row & EntriesModel;
 export type TeamsModelType = Models.Row & TeamsModel;
+
+export interface LeaderboardParticipant {
+  entryId: string;
+  participantName: string;
+  teamsAlive: number;
+  teamStatus: {
+    teamName: string;
+    isAlive: boolean;
+  }[];
+  points: number;
+  pointsBehind: number;
+}

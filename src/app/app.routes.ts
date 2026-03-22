@@ -18,6 +18,11 @@ export const routes: Routes = [
       import('./pages/leaderboard-page/leaderboard-page').then((m) => m.LeaderboardPage),
   },
   {
+    path: 'entry/:entryId',
+    loadComponent: () =>
+      import('./pages/entry-details-page/entry-details-page').then((m) => m.EntryDetailsPage),
+  },
+  {
     path: 'tournament',
     loadComponent: () =>
       import('./pages/tournament-page/tournament-page').then((m) => m.TournamentPage),

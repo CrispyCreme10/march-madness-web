@@ -1,0 +1,69 @@
+<app-main-layout>
+  <div class="flex justify-center items-center">
+    @if (isLoading()) {
+      <img width="50" height="50" src="spinner.gif" />
+    } @else if (!entryDetails()) {
+      <span>Entry not found.</span>
+    } @else {
+      <div id="entry-details">
+        <div class="entry-header">
+          <h2>{{ entryDetails()!.entry.Entry_Name }}</h2>
+          <div class="entry-summary">
+            <span><strong>Teams Alive:</strong> {{ entryDetails()!.entry.Teams_Alive }}</span>
+            <span><strong>Bonus Points:</strong> {{ entryDetails()!.entry.Entry_Points }}</span>
+            <span><strong>Team Points:</strong> {{ teamPoints() }}</span>
+            <span><strong>Total Points:</strong> {{ totalPoints() }}</span>
+          </div>
+        </div>
+        <p-table
+          #dataTable
+          [columns]="selectedColumns"
+          [value]="entryDetails()!.teams"
+          showGridlines
+          sortField="Total_Points"
+          [sortOrder]="-1"
+          resizableColumns
+          [tableStyle]="{ 'min-width': '50rem' }"
+          size="small"
+        >
+          <ng-template #caption>
+            <p-multiselect
+              display="chip"
+              [options]="cols"
+              [(ngModel)]="selectedColumns"
+              optionLabel="header"
+              selectedItemsLabel="{0} columns selected"
+              [style]="{ 'min-width': '200px' }"
+              placeholder="Choose Columns"
+            />
+          </ng-template>
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              @for (col of columns; track $index) {
+                <th pResizableColumn [pSortableColumn]="col.field">
+                  <div class="flex items-center gap-2">
+                    {{ col.header }}
+                    <p-sortIcon field="{{ col.field }}" />
+                  </div>
+                </th>
+              }
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-team let-columns="columns">
+            <tr [class.eliminated]="team.Alive === 'FALSE'">
+              @for (col of columns; track $index) {
+                @if (col.field === 'Teams') {
+                  <td>{{ team.Teams }}</td>
+                } @else if (col.field === 'Alive') {
+                  <td class="text-center">{{ team.Alive === 'TRUE' ? 'Yes' : 'No' }}</td>
+                } @else {
+                  <td class="text-center">{{ team[col.field] }}</td>
+                }
+              }
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    }
+  </div>
+</app-main-layout>

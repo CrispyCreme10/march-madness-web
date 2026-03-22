@@ -1,11 +1,9 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MainLayout } from '../../layouts/main-layout/main-layout';
-import {
-  AppwriteService,
-  LeaderboardParticipant,
-} from '../../services/appwrite-service/appwrite-service';
+import { AppwriteService } from '../../services/appwrite-service/appwrite-service';
 import { interval, Subscription, tap } from 'rxjs';
 import { calculateTimeRemaining } from '../../core/utils';
+import { AppNavigationService } from '../../services/app-navigation-service/app-navigation-service';
 
 @Component({
   selector: 'app-leaderboard-page',
@@ -15,14 +13,14 @@ import { calculateTimeRemaining } from '../../core/utils';
 })
 export class LeaderboardPage implements OnInit, OnDestroy {
   appwriteService = inject(AppwriteService);
+  appNavigationService = inject(AppNavigationService);
 
   private subscription!: Subscription;
   private readonly LEADERBOARD_REFRESH_RATE_MS = 1000 * 60; // 1 min
-  private _leaderboardParticipants = signal<LeaderboardParticipant[]>([]);
   private _leaderboardRefreshTimeRemaining = signal<string>('calculating...');
   private _isFetchingLeaderboardData = signal<boolean>(false);
 
-  leaderboardParticipants = this._leaderboardParticipants.asReadonly();
+  leaderboardParticipants = this.appwriteService.leaderboardParticipants;
   leaderboardRefreshTimeRemaining = this._leaderboardRefreshTimeRemaining.asReadonly();
   isFetchingLeaderboardData = this._isFetchingLeaderboardData.asReadonly();
 
@@ -59,11 +57,14 @@ export class LeaderboardPage implements OnInit, OnDestroy {
   async fetchLeaderboardData() {
     this._isFetchingLeaderboardData.set(true);
     try {
-      const leaderboardParticipants = await this.appwriteService.getUpdatedLeaderboard();
-      this._leaderboardParticipants.set(leaderboardParticipants);
+      await this.appwriteService.getUpdatedLeaderboard();
       this._isFetchingLeaderboardData.set(false);
     } catch (error) {
       this._isFetchingLeaderboardData.set(false);
     }
+  }
+
+  openEntryDetails(entryId: string) {
+    this.appNavigationService.goToEntryDetails(entryId);
   }
 }

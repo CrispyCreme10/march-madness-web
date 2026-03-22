@@ -1,32 +1,27 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Client, Models, Query, TablesDB } from 'appwrite';
 import {
-  EntriesModel,
   EntriesModelType,
-  TeamsModel,
+  LeaderboardParticipant,
   TeamsModelType,
 } from '../../models/appwrite.models';
+import { AppwriteStore } from '../../store/appwrite.store';
 
-export interface LeaderboardParticipant {
-  participantName: string;
-  teamsAlive: number;
-  teamStatus: {
-    teamName: string;
-    isAlive: boolean;
-  }[];
-  points: number;
-  pointsBehind: number;
-}
+export type { LeaderboardParticipant };
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppwriteService {
+  private appwriteStore = inject(AppwriteStore);
+
   private client: Client;
   private tablesDB: TablesDB;
 
   private ENTRIES_TABLE_ID = 'entries';
   private TEAMS_TABLE_ID = 'teams';
+
+  leaderboardParticipants = this.appwriteStore.leaderboardParticipants;
 
   constructor() {
     this.client = new Client()
@@ -36,64 +31,32 @@ export class AppwriteService {
     this.tablesDB = new TablesDB(this.client);
   }
 
-  async getUpdatedLeaderboard(): Promise<LeaderboardParticipant[]> {
+  async loadEntries(): Promise<EntriesModelType[]> {
+    try {
+      const entriesRowList = await this.getAllEntries();
+      this.appwriteStore.updateEntries(entriesRowList.rows);
+      return entriesRowList.rows;
+    } catch (error) {
+      console.error('Error fetching entries:', error);
+      throw error;
+    }
+  }
+
+  async loadTeams(): Promise<TeamsModelType[]> {
+    try {
+      const teamsRowList = await this.getAllTeams();
+      this.appwriteStore.updateTeams(teamsRowList.rows);
+      return teamsRowList.rows;
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+      throw error;
+    }
+  }
+
+  async getUpdatedLeaderboard(): Promise<void> {
     try {
       // 1. Get all Entry records and all Teams records
-      const entriesRowList = await this.getAllEntries();
-      const entries: EntriesModel[] = entriesRowList.rows;
-      const teamsRowList = await this.getAllTeams();
-      const teams: TeamsModel[] = teamsRowList.rows;
-
-      const teamNameMap = new Map<string, TeamsModel>(teams.map((team) => [team.Teams, team]));
-
-      // 2. Create a link between an Entry, it's teams, and the Teams records
-      const leaderboardParticipants: LeaderboardParticipant[] = [];
-      entries.forEach((entry) => {
-        const leaderboardParticipant: LeaderboardParticipant = {
-          participantName: entry.Entry_Name,
-          teamsAlive: entry.Teams_Alive,
-          teamStatus: [],
-          points: 0,
-          pointsBehind: 0,
-        };
-        let totalParticipantPoints = entry.Entry_Points;
-        const teamNames = entry.Entry_Teams.split(',');
-        teamNames.forEach((teamName) => {
-          const team = teamNameMap.get(teamName);
-          if (team) {
-            totalParticipantPoints += team.Total_Points;
-            leaderboardParticipant.teamStatus = [
-              ...leaderboardParticipant.teamStatus,
-              {
-                teamName: team.Teams,
-                isAlive: team.Alive === 'TRUE',
-              },
-            ];
-          } else {
-            console.error(`Team (${teamName}) not found for participant ${entry.Entry_Name}`);
-          }
-        });
-
-        leaderboardParticipant.points = totalParticipantPoints;
-        leaderboardParticipants.push(leaderboardParticipant);
-      });
-
-      let sortedLeaderboard = leaderboardParticipants.sort((a, b) => b.points - a.points);
-      let leadingParticipant: LeaderboardParticipant | undefined;
-      sortedLeaderboard = sortedLeaderboard.map((leaderboardParticipant, index) => {
-        if (index === 0) {
-          leadingParticipant = leaderboardParticipant;
-          return leaderboardParticipant;
-        }
-
-        return {
-          ...leaderboardParticipant,
-          pointsBehind: leadingParticipant
-            ? leadingParticipant.points - leaderboardParticipant.points
-            : 0,
-        };
-      });
-      return sortedLeaderboard;
+      await Promise.all([this.loadEntries(), this.loadTeams()]);
     } catch (error) {
       console.error('Error updating leaderboard:', error);
       throw error;

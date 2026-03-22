@@ -1,0 +1,40 @@
+#entry-details {
+  width: 100%;
+}
+
+.entry-header {
+  margin-bottom: 16px;
+}
+
+.entry-header h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.entry-summary {
+  display: flex;
+  gap: 24px;
+  font-size: 1rem;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: sans-serif;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #4e4e4e;
+  color: white;
+}
+
+tr.eliminated td {
+  color: #999;
+}

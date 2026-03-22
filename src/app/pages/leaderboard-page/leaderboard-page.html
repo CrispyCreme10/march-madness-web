@@ -23,7 +23,7 @@
         </thead>
         <tbody>
           @for (leaderboardParticipant of leaderboardParticipants(); track $index) {
-            <tr>
+            <tr (click)="openEntryDetails(leaderboardParticipant.entryId)">
               <td class="text-center">{{ $index + 1 }}</td>
               <td>{{ leaderboardParticipant.participantName }}</td>
               <td class="text-center">{{ leaderboardParticipant.points }}</td>
