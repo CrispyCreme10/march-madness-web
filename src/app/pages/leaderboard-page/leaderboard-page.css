@@ -1,25 +1,3 @@
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-family: sans-serif;
-}
-
-th,
-td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-}
-
-tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-th {
-  background-color: #4e4e4e;
-  color: white;
-}
-
-tr:hover {
-  background-color: #ddd;
+tr.hoverable:hover {
   cursor: pointer;
 }

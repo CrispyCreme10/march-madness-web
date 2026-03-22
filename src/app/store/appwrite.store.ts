@@ -47,6 +47,7 @@ export class AppwriteStore {
       });
       return {
         entryId: entry.$id,
+        rank: 0, // will be set in sorted map below
         participantName: entry.Entry_Name,
         teamsAlive: entry.Teams_Alive,
         teamStatus,
@@ -57,9 +58,10 @@ export class AppwriteStore {
 
     const sorted = participants.sort((a, b) => b.points - a.points);
     const leader = sorted[0];
-    return sorted.map((p, i) =>
-      i === 0 ? p : { ...p, pointsBehind: leader ? leader.points - p.points : 0 },
-    );
+    return sorted.map((p, i) => {
+      const pointsBehind = leader ? leader.points - p.points : 0;
+      return i === 0 ? { ...p, rank: i + 1 } : { ...p, rank: i + 1, pointsBehind };
+    });
   });
 
   updateEntries(entries: EntriesModelType[]) {

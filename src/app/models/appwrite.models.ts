@@ -26,6 +26,7 @@ export type TeamsModelType = Models.Row & TeamsModel;
 
 export interface LeaderboardParticipant {
   entryId: string;
+  rank: number;
   participantName: string;
   teamsAlive: number;
   teamStatus: {

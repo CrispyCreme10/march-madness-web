@@ -11,28 +11,38 @@
     } @else if (!leaderboardParticipants().length) {
       <span>Leaderboard not available.</span>
     } @else {
-      <table>
-        <thead>
+      <p-table
+        #dataTable
+        [value]="leaderboardParticipants()"
+        [scrollable]="true"
+        scrollHeight="flex"
+        showGridlines
+        rowHover
+        stripedRows
+        resizableColumns
+        [tableStyle]="{ 'min-width': '50rem' }"
+        size="small"
+        [style]="{ width: '100%' }"
+      >
+        <ng-template #header>
           <tr>
-            <th>Place</th>
-            <th>Name</th>
-            <th>Points</th>
-            <th>Teams Left</th>
-            <th>Points Behind</th>
+            <th class="text-center">Place</th>
+            <th class="text-center">Name</th>
+            <th class="text-center">Points</th>
+            <th class="text-center">Teams Left</th>
+            <th class="text-center">Points Behind</th>
           </tr>
-        </thead>
-        <tbody>
-          @for (leaderboardParticipant of leaderboardParticipants(); track $index) {
-            <tr (click)="openEntryDetails(leaderboardParticipant.entryId)">
-              <td class="text-center">{{ $index + 1 }}</td>
-              <td>{{ leaderboardParticipant.participantName }}</td>
-              <td class="text-center">{{ leaderboardParticipant.points }}</td>
-              <td class="text-center">{{ leaderboardParticipant.teamsAlive }}</td>
-              <td class="text-center">{{ leaderboardParticipant.pointsBehind }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+        </ng-template>
+        <ng-template #body let-participant>
+          <tr class="hoverable" (click)="openEntryDetails(participant.entryId)">
+            <td class="text-center">{{ participant.rank }}</td>
+            <td>{{ participant.participantName }}</td>
+            <td class="text-center">{{ participant.points }}</td>
+            <td class="text-center">{{ participant.teamsAlive }}</td>
+            <td class="text-center">{{ participant.pointsBehind }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
     }
   </div>
 </app-main-layout>

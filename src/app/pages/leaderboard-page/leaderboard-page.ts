@@ -4,10 +4,11 @@ import { AppwriteService } from '../../services/appwrite-service/appwrite-servic
 import { interval, Subscription, tap } from 'rxjs';
 import { calculateTimeRemaining } from '../../core/utils';
 import { AppNavigationService } from '../../services/app-navigation-service/app-navigation-service';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-leaderboard-page',
-  imports: [MainLayout],
+  imports: [MainLayout, TableModule],
   templateUrl: './leaderboard-page.html',
   styleUrl: './leaderboard-page.css',
 })
