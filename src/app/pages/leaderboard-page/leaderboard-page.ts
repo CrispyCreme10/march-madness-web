@@ -6,10 +6,11 @@ import { calculateTimeRemaining } from '../../core/utils';
 import { AppNavigationService } from '../../services/app-navigation-service/app-navigation-service';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-leaderboard-page',
-  imports: [MainLayout, TableModule, CardModule],
+  imports: [CommonModule, MainLayout, TableModule, CardModule],
   templateUrl: './leaderboard-page.html',
   styleUrl: './leaderboard-page.css',
 })

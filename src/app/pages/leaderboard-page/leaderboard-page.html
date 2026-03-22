@@ -36,7 +36,15 @@
           </tr>
         </ng-template>
         <ng-template #body let-participant>
-          <tr class="hoverable" (click)="openEntryDetails(participant.entryId)">
+          <tr
+            class="hoverable"
+            [class]="{
+              'bg-gold': participant.rank === 1,
+              'bg-silver': participant.rank === 2,
+              'bg-bronze': participant.rank === 3,
+            }"
+            (click)="openEntryDetails(participant.entryId)"
+          >
             <td class="text-center">{{ participant.rank }}</td>
             <td>{{ participant.participantName }}</td>
             <td class="text-center">{{ participant.points }}</td>

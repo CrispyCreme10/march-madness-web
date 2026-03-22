@@ -1,3 +1,18 @@
 tr.hoverable:hover {
   cursor: pointer;
 }
+
+tr.bg-gold {
+  background: linear-gradient(180deg, #d19e1d, #ffd86e, #e3a812);
+  color: black;
+}
+
+tr.bg-silver {
+  background: linear-gradient(180deg, #a8a8a8, #f0f0f0, #8e8e8e);
+  color: black;
+}
+
+tr.bg-bronze {
+  background: linear-gradient(180deg, #804a00, #cd7f32, #733e00);
+  color: black;
+}
