@@ -81,8 +81,9 @@ export class TournamentPage implements OnInit, OnDestroy {
   fetchScoreboardData() {
     this._isFetchingScoreboardData.set(true);
     const today = new Date();
-    const todayISO = today.toISOString().slice(0, 10); // YYYY-MM-DD
-    const [year, month, day] = todayISO.split('-');
+    const year = today.getFullYear().toString();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
+    const day = today.getDate().toString().padStart(2, '0');
     this.espnApiService.getScoreboardDataByDate(year, month, day).subscribe({
       next: (response) => {
         const liveGames: LiveGame[] =
