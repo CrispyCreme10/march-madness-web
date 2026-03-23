@@ -7,6 +7,7 @@ import { AppNavigationService } from '../../services/app-navigation-service/app-
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
+import { AppBreakpointService } from '../../services/app-breakpoint-service/app-breakpoint-service';
 
 @Component({
   selector: 'app-leaderboard-page',
@@ -15,14 +16,16 @@ import { CommonModule } from '@angular/common';
   styleUrl: './leaderboard-page.css',
 })
 export class LeaderboardPage implements OnInit, OnDestroy {
-  appwriteService = inject(AppwriteService);
-  appNavigationService = inject(AppNavigationService);
+  private appwriteService = inject(AppwriteService);
+  private appNavigationService = inject(AppNavigationService);
+  private appBreakpointService = inject(AppBreakpointService);
 
   private subscription!: Subscription;
   private readonly LEADERBOARD_REFRESH_RATE_MS = 1000 * 60; // 1 min
   private _leaderboardRefreshTimeRemaining = signal<string>('calculating...');
   private _isFetchingLeaderboardData = signal<boolean>(false);
 
+  isSmallScreen = this.appBreakpointService.isSmallScreen;
   leaderboardParticipants = this.appwriteService.leaderboardParticipants;
   leaderboardRefreshTimeRemaining = this._leaderboardRefreshTimeRemaining.asReadonly();
   isFetchingLeaderboardData = this._isFetchingLeaderboardData.asReadonly();

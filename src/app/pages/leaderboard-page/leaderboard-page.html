@@ -19,14 +19,15 @@
         resizableColumns
         size="small"
         [style]="{ width: '100%' }"
+        [tableStyle]="{ 'table-layout': 'var(--table-layout)' }"
       >
         <ng-template #header>
           <tr>
-            <th pResizableColumn class="text-center" style="width: 10%">Place</th>
-            <th pResizableColumn class="text-center" style="width: 45%">Name</th>
-            <th pResizableColumn class="text-center" style="width: 15%">Points</th>
-            <th pResizableColumn class="text-center" style="width: 15%">Teams Left</th>
-            <th pResizableColumn class="text-center" style="width: 15%">Points Behind</th>
+            <th pResizableColumn class="text-center text-wrap">Place</th>
+            <th pResizableColumn class="text-center text-wrap">Name</th>
+            <th pResizableColumn class="text-center text-wrap">Points</th>
+            <th pResizableColumn class="text-center text-wrap">Teams Left</th>
+            <th pResizableColumn class="text-center text-wrap">Points Behind</th>
           </tr>
         </ng-template>
         <ng-template #body let-participant>
@@ -40,7 +41,11 @@
             (click)="openEntryDetails(participant.entryId)"
           >
             <td class="text-center">{{ participant.rank }}</td>
-            <td>{{ participant.participantName }}</td>
+            <td>
+              <div class="text-wrap wrap-break-word">
+                {{ participant.participantName }}
+              </div>
+            </td>
             <td class="text-center">{{ participant.points }}</td>
             <td class="text-center">{{ participant.teamsAlive }}</td>
             <td class="text-center">{{ participant.pointsBehind }}</td>
