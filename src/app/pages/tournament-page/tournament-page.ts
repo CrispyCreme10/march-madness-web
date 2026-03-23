@@ -109,7 +109,7 @@ export class TournamentPage implements OnInit, OnDestroy {
       },
       error: (err) => {
         this._isFetchingScoreboardData.set(false);
-        console.log(err);
+        console.log(`Error fetching scoreboard data: ${err}`);
       },
     });
   }

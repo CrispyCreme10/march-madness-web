@@ -68,7 +68,7 @@ export class AppwriteService {
       return await this.tablesDB.listRows<EntriesModelType>({
         databaseId: import.meta.env['NG_APP_APPWRITE_DATABASE_ID'],
         tableId: this.ENTRIES_TABLE_ID,
-        queries: [Query.limit(1000)],
+        queries: [Query.limit(1000)], // Assuming there won't be more than 1000 entries; adjust as needed
       });
     } catch (error) {
       console.error('Error fetching entries:', error);
@@ -81,7 +81,7 @@ export class AppwriteService {
       return await this.tablesDB.listRows<TeamsModelType>({
         databaseId: import.meta.env['NG_APP_APPWRITE_DATABASE_ID'],
         tableId: this.TEAMS_TABLE_ID,
-        queries: [Query.limit(1000)],
+        queries: [Query.limit(1000)], // Assuming there won't be more than 1000 teams; adjust as needed
       });
     } catch (error) {
       console.error('Error fetching teams:', error);

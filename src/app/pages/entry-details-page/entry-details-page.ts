@@ -107,6 +107,6 @@ export class EntryDetailsPage implements OnInit, OnDestroy {
   }
 
   calculateTeamPoints(teams: TeamsModelType[]): number {
-    return teams.reduce((total: number, team: any) => total + team.Total_Points, 0);
+    return teams.reduce((total: number, team: TeamsModelType) => total + team.Total_Points, 0);
   }
 }

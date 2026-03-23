@@ -59,7 +59,7 @@
 <ng-template #competitorTemplate let-competitor let-isFinal="isFinal" let-lost="lost">
   <div id="competitor" [ngClass]="{ lost }" class="relative flex justify-between">
     <div class="flex gap-1 items-center">
-      <img width="20" heigth="20" [src]="competitor.team.logo" />
+      <img width="20" height="20" [src]="competitor.team.logo" />
       <span class="flex justify-center items-center text-xs w-4 h-4 text-[#6c6e6f]">{{
         competitor.curatedRank.current
       }}</span>

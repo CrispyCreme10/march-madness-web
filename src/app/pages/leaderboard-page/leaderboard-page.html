@@ -1,10 +1,4 @@
 <app-main-layout>
-  <!-- 
-  DISABLING timer to reduce unnecessary calls - JR 03/20/26
-  <div>
-    <h4 class="text-center mb-5 font-bold">Refresh: {{ leaderboardRefreshTimeRemaining() }}</h4>
-  </div> 
-  -->
   @if (isFetchingLeaderboardData()) {
     <!-- <div class="flex justify-center items-center">
       <img width="50" height="50" src="spinner.gif" />
